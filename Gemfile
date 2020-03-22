@@ -1,11 +1,12 @@
 source 'https://rubygems.org'
 
+ruby '2.5.7'
 gem 'rails', '~> 4.2.6'
 
 # Удобная админка для управления любыми сущностями
 gem 'rails_admin'
 
-gem 'devise', '~> 4.1.1'
+gem 'devise', git: 'https://github.com/plataformatec/devise', branch: '3-stable'
 gem 'devise-i18n'
 
 gem 'uglifier', '>= 1.3.0'
@@ -33,5 +34,5 @@ group :production do
   # гем, улучшающий вывод логов на Heroku
   # https://devcenter.heroku.com/articles/getting-started-with-rails4#heroku-gems
   gem 'rails_12factor'
-  gem 'pg'
+  gem 'pg', '~> 0.15'
 end
