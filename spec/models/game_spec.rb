@@ -61,6 +61,18 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_falsey
     end
 
+    # тест на проверку текущего игрового вопроса
+    it 'current game question' do
+      q = game_w_questions.current_game_question
+
+      expect(game_w_questions.current_game_question).to eq(q)
+    end
+
+    # не очень понимаю за что этот метод отвечает
+    it 'previous_level' do
+      expect(game_w_questions.previous_level).to eq(-1)
+    end
+
     it 'take_money! finishes the game' do
       # берем игру и отвечаем на текущий вопрос
       q = game_w_questions.current_game_question
