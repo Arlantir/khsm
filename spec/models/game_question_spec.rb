@@ -25,6 +25,11 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.answer_correct?('b')).to be_truthy
     end
 
+    # тест на ключ правильного ответа
+    it 'correct .correct_answer_key' do
+      expect(game_question.correct_answer_key).to include('b')
+    end
+
     # тест на наличие методов делегатов level и text
     it 'correct .level & .text delegates' do
       expect(game_question.text).to eq(game_question.question.text)
