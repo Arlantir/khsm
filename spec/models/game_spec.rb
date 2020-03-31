@@ -63,9 +63,9 @@ RSpec.describe Game, type: :model do
 
     # тест на проверку текущего игрового вопроса
     it 'current game question' do
-      q = game_w_questions.current_game_question
+      q = game_w_questions.current_game_question.text
 
-      expect(game_w_questions.current_game_question).to eq(q)
+      expect(game_w_questions.current_game_question.text).to eq(q)
     end
 
     # не очень понимаю за что этот метод отвечает
