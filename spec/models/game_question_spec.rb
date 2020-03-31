@@ -27,7 +27,7 @@ RSpec.describe GameQuestion, type: :model do
 
     # тест на ключ правильного ответа
     it 'correct .correct_answer_key' do
-      expect(game_question.correct_answer_key).to eql('b')
+      expect(game_question.correct_answer_key).to eq('b')
     end
 
     # тест на наличие методов делегатов level и text
