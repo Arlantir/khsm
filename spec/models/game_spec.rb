@@ -63,12 +63,15 @@ RSpec.describe Game, type: :model do
 
     # тест на проверку текущего игрового вопроса
     it 'current game question' do
-      q = game_w_questions.current_game_question.text
+      # создадим игру
+      game_w_questions
+      # вытащим первый вопрос
+      q = Question.first.text
 
       expect(game_w_questions.current_game_question.text).to eq(q)
     end
 
-    # не очень понимаю за что этот метод отвечает
+    # тест на проверку первого вопроса (для начала игры)
     it 'previous_level' do
       expect(game_w_questions.previous_level).to eq(-1)
     end
