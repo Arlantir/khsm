@@ -61,6 +61,19 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_falsey
     end
 
+    # тест на проверку текущего игрового вопроса
+    it 'current game question' do
+      # из массива вопросов текущей игры, берем первый вопрос
+      q = game_w_questions.game_questions.first
+
+      expect(game_w_questions.current_game_question).to eq(q)
+    end
+
+    # тест на проверку первого вопроса (для начала игры)
+    it 'previous_level' do
+      expect(game_w_questions.previous_level).to eq(-1)
+    end
+
     it 'take_money! finishes the game' do
       # берем игру и отвечаем на текущий вопрос
       q = game_w_questions.current_game_question
@@ -104,6 +117,39 @@ RSpec.describe Game, type: :model do
 
       it ':money' do
         expect(game_w_questions.status).to eq(:money)
+      end
+    end
+
+    # группа тестов на проверку ответов пользователя
+    context '.answer_current_question!' do
+      before(:each) do
+        game_w_questions
+      end
+
+      context ".false" do
+        # пользователь даль неправильный ответ
+        it 'answer false' do
+          wrong_answer = Question.first.answer1
+
+          expect(game_w_questions.answer_current_question!(wrong_answer)).to be_falsey
+        end
+
+        # пользователь даль ответ, но время вышло
+        it 'time fail' do
+          game_w_questions.finished_at = Time.now
+          answer = Question.first.answer2
+
+          expect(game_w_questions.answer_current_question!(answer)).to be_falsey
+        end
+      end
+      
+      context '.true' do
+        # пользователь дал правильный ответ
+        it '.answer true ' do
+          correct_answer = GameQuestion.correct_answer
+
+          expect(game_w_questions.answer_current_question!(correct_answer)).to be_truthy
+        end
       end
     end
   end
