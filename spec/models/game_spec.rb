@@ -64,9 +64,9 @@ RSpec.describe Game, type: :model do
     # тест на проверку текущего игрового вопроса
     it 'current game question' do
       # из массива вопросов текущей игры, берем первый вопрос
-      q = game_w_questions.game_questions.first.text
+      q = game_w_questions.game_questions.first
 
-      expect(game_w_questions.current_game_question.text).to eq(q)
+      expect(game_w_questions.current_game_question).to eq(q)
     end
 
     # тест на проверку первого вопроса (для начала игры)
