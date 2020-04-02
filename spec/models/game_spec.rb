@@ -123,35 +123,43 @@ RSpec.describe Game, type: :model do
     end
 
     # группа тестов на проверку ответов пользователя
-    context '.answer_current_question!' do
-      before(:each) do
-        game_w_questions
+    describe '#answer_current_question!' do
+      context 'when answer is correct' do
+
+        it 'when question is last' do
+          # получим последний вопрос
+          q = game_w_questions.game_questions.last
+
+
+        end
+
+        it 'when timeout' do
+          # в переменную добавляем игру с вопросами
+          q = game_w_questions.current_game_question
+          # завершаем игру по таймауту
+          game_w_questions.created_at = 1.hour.ago
+          game_w_questions.is_failed = true
+
+          # при ответе возвращаем false, так как игра закончена
+          expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_falsey
+          # статус почему закончилась игра
+          expect(game_w_questions.status).to eq(:timeout)
+        end
+
+        it 'when normal case' do
+          # в переменную добавляем игру с вопросами
+          q = game_w_questions.current_game_question
+
+          # проверяем, что ответ правильный
+          expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_truthy
+
+          # игра продолжается
+          expect(game_w_questions.status).to eq(:in_progress)
+          expect(game_w_questions.finished?).to be_falsey
+        end
       end
 
-      context ".false" do
-        # пользователь даль неправильный ответ
-        it 'answer false' do
-          wrong_answer = Question.first.answer1
-
-          expect(game_w_questions.answer_current_question!(wrong_answer)).to be_falsey
-        end
-
-        # пользователь даль ответ, но время вышло
-        it 'time fail' do
-          game_w_questions.finished_at = Time.now
-          answer = Question.first.answer2
-
-          expect(game_w_questions.answer_current_question!(answer)).to be_falsey
-        end
-      end
-      
-      context '.true' do
-        # пользователь дал правильный ответ
-        it '.answer true ' do
-          correct_answer = GameQuestion.correct_answer
-
-          expect(game_w_questions.answer_current_question!(correct_answer)).to be_truthy
-        end
+      context 'when answer is wrong' do
       end
     end
   end
