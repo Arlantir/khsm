@@ -126,40 +126,73 @@ RSpec.describe Game, type: :model do
     describe '#answer_current_question!' do
       context 'when answer is correct' do
 
-        it 'when question is last' do
-          # получим последний вопрос
-          q = game_w_questions.game_questions.last
+        context 'and question is last' do
+          let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
+          before { game_w_questions.answer_current_question!(correct_answer) }
 
+          it 'answer to the last question' do
+            # повышаем уровень игры до последнего
+            game_w_questions.update_attribute(:current_level, 14)
 
+            # проверяем, что ответ правильный
+            expect(game_w_questions.answer_current_question!(correct_answer)).to be true
+
+            # взяли деньги
+            game_w_questions.take_money!
+
+            # проверяем приз
+            prize = game_w_questions.prize
+            expect(prize).to eq(1_000_000)
+
+            # проверяем что юзер победил и пришли деньги игроку
+            expect(game_w_questions.status).to eq :won
+            expect(game_w_questions.finished?).to be true
+            expect(user.balance).to eq prize
+          end
         end
 
-        it 'when timeout' do
-          # в переменную добавляем игру с вопросами
-          q = game_w_questions.current_game_question
-          # завершаем игру по таймауту
-          game_w_questions.created_at = 1.hour.ago
-          game_w_questions.is_failed = true
+        context 'and timeout' do
+          let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
+          before { game_w_questions.answer_current_question!(correct_answer) }
 
-          # при ответе возвращаем false, так как игра закончена
-          expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_falsey
-          # статус почему закончилась игра
-          expect(game_w_questions.status).to eq(:timeout)
+          it 'answer the question' do
+            game_w_questions.created_at = 1.hour.ago
+            game_w_questions.is_failed = true
+
+            # при ответе возвращаем false, так как игра закончена
+            expect(game_w_questions.answer_current_question!(correct_answer)).to be false
+            # статус почему закончилась игра
+            expect(game_w_questions.status).to eq(:timeout)
+          end
         end
 
-        it 'when normal case' do
-          # в переменную добавляем игру с вопросами
-          q = game_w_questions.current_game_question
+        context 'and normal case' do
+          let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
+          before { game_w_questions.answer_current_question!(correct_answer) }
 
-          # проверяем, что ответ правильный
-          expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_truthy
+          it 'answer correctly' do
+            # проверяем, что ответ правильный
+            expect(game_w_questions.answer_current_question!(correct_answer)).to be true
 
-          # игра продолжается
-          expect(game_w_questions.status).to eq(:in_progress)
-          expect(game_w_questions.finished?).to be_falsey
+            # игра продолжается
+            expect(game_w_questions.status).to eq(:in_progress)
+            expect(game_w_questions.finished?).to be false
+          end
         end
       end
 
       context 'when answer is wrong' do
+        let(:correct_answer) { !game_w_questions.current_game_question.correct_answer_key }
+        before { game_w_questions.answer_current_question!(correct_answer) }
+
+        it 'answer incorrect' do
+          # проверяем, что ответ неправильный
+          expect(game_w_questions.answer_current_question!(correct_answer)).to be false
+
+          # игра не продолжается
+          expect(game_w_questions.status).to_not eq(:in_progress)
+          expect(game_w_questions.finished?).to be true
+        end
       end
     end
   end
