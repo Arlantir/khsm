@@ -28,6 +28,50 @@ RSpec.describe GamesController, type: :controller do
       expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
       expect(flash[:alert]).to be # во flash должен быть прописана ошибка
     end
+
+    # из экшена create анона посылаем
+    it 'kick from #create' do
+      # вызываем экшен
+      post :create
+
+      # проверяем ответ
+      expect(response.status).not_to eq(200) # статус не 200 ОК
+      expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
+      expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+    end
+
+    # из экшена answer анона посылаем
+    it 'kick from #answer' do
+      # вызываем экшен
+      put :answer, id: game_w_questions.id
+
+      # проверяем ответ
+      expect(response.status).not_to eq(200) # статус не 200 ОК
+      expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
+      expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+    end
+
+    # из экшена take_money анона посылаем
+    it 'kick from #take_money' do
+      # вызываем экшен
+      put :take_money, id: game_w_questions.id
+
+      # проверяем ответ
+      expect(response.status).not_to eq(200) # статус не 200 ОК
+      expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
+      expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+    end
+
+    # из экшена help анона посылаем
+    it 'kick from #help' do
+      # вызываем экшен
+      put :help, id: game_w_questions.id
+
+      # проверяем ответ
+      expect(response.status).not_to eq(200) # статус не 200 ОК
+      expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
+      expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+    end
   end
 
   # группа тестов на экшены контроллера, доступных залогиненным юзерам
