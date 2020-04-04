@@ -121,34 +121,51 @@ RSpec.describe Game, type: :model do
     end
 
     # группа тестов на проверку ответов пользователя
-    context '.answer_current_question!' do
-      before(:each) do
-        game_w_questions
-      end
+    describe '#answer_current_question!' do
+      context 'when answer is correct' do
+        let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
+        before { game_w_questions.answer_current_question!(correct_answer) }
 
-      context ".false" do
-        # пользователь даль неправильный ответ
-        it 'answer false' do
-          wrong_answer = Question.first.answer1
+        context 'and question is last' do
+          let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user, current_level: Question::QUESTION_LEVELS.max) }
 
-          expect(game_w_questions.answer_current_question!(wrong_answer)).to be_falsey
+          it 'answer to the last question' do
+            # проверяем что юзер победил и пришли деньги игроку
+            expect(game_w_questions.status).to eq :won
+            expect(game_w_questions.finished?).to be true
+            expect(user.balance).to eq(Game::PRIZES.max)
+          end
         end
 
-        # пользователь даль ответ, но время вышло
-        it 'time fail' do
-          game_w_questions.finished_at = Time.now
-          answer = Question.first.answer2
+        context 'and timeout' do
+          let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user, created_at: 1.hour.ago, is_failed: true) }
 
-          expect(game_w_questions.answer_current_question!(answer)).to be_falsey
+          it 'answer the question' do
+            # игра закончилась по тайм ауту
+            expect(game_w_questions.status).to eq(:timeout)
+            expect(game_w_questions.finished?).to be true
+          end
+        end
+
+        context 'and normal case' do
+          it 'answer correctly' do
+            # игра продолжается при правильном ответе
+            expect(game_w_questions.status).to eq(:in_progress)
+            expect(game_w_questions.finished?).to be false
+          end
         end
       end
-      
-      context '.true' do
-        # пользователь дал правильный ответ
-        it '.answer true ' do
-          correct_answer = GameQuestion.correct_answer
 
-          expect(game_w_questions.answer_current_question!(correct_answer)).to be_truthy
+      context 'when answer is wrong' do
+        let(:wrong_answer) do
+          %w[a b c d].reject { |q| q == game_w_questions.current_game_question.correct_answer_key }.sample
+        end
+        before { game_w_questions.answer_current_question!(wrong_answer) }
+
+        it 'answer incorrect' do
+          # игра не продолжается при неправильном ответе
+          expect(game_w_questions.status).to eq(:fail)
+          expect(game_w_questions.finished?).to be true
         end
       end
     end
