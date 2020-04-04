@@ -32,7 +32,7 @@ RSpec.describe GamesController, type: :controller do
     # из экшена create анона посылаем
     it 'kick from #create' do
       # вызываем экшен
-      post :create, id: game_w_questions.id
+      post :create
 
       # проверяем ответ
       expect(response.status).not_to eq(200) # статус не 200 ОК
