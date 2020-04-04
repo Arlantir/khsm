@@ -132,13 +132,10 @@ RSpec.describe Game, type: :model do
           let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user, current_level: Question::QUESTION_LEVELS.max) }
 
           it 'answer to the last question' do
-            # проверяем, что ответ правильный
-            expect(game_w_questions.answer_current_question!(correct_answer)).to be true
-
             # проверяем что юзер победил и пришли деньги игроку
             expect(game_w_questions.status).to eq :won
             expect(game_w_questions.finished?).to be true
-            expect(user.balance).to eq(PRIZES.max)
+            expect(user.balance).to eq(Game::PRIZES.max)
           end
         end
 
@@ -146,19 +143,14 @@ RSpec.describe Game, type: :model do
           let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user, created_at: 1.hour.ago, is_failed: true) }
 
           it 'answer the question' do
-            # при ответе возвращаем false, так как игра закончена
-            expect(game_w_questions.answer_current_question!(correct_answer)).to be false
-            # статус почему закончилась игра
+            # игра закончилась по тайм ауту
             expect(game_w_questions.status).to eq(:timeout)
           end
         end
 
         context 'and normal case' do
           it 'answer correctly' do
-            # проверяем, что ответ правильный
-            expect(game_w_questions.answer_current_question!(correct_answer)).to be true
-
-            # игра продолжается
+            # игра продолжается при правильном ответе
             expect(game_w_questions.status).to eq(:in_progress)
             expect(game_w_questions.finished?).to be false
           end
@@ -175,10 +167,7 @@ RSpec.describe Game, type: :model do
         before { game_w_questions.answer_current_question!(wrong_answer) }
 
         it 'answer incorrect' do
-          # проверяем, что ответ неправильный
-          expect(game_w_questions.answer_current_question!(wrong_answer)).to be false
-
-          # игра не продолжается
+          # игра не продолжается при неправильном ответе
           expect(game_w_questions.status).to_not eq(:in_progress)
           expect(game_w_questions.finished?).to be true
         end
