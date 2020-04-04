@@ -137,17 +137,10 @@ RSpec.describe Game, type: :model do
             # проверяем, что ответ правильный
             expect(game_w_questions.answer_current_question!(correct_answer)).to be true
 
-            # взяли деньги
-            game_w_questions.take_money!
-
-            # проверяем приз
-            prize = game_w_questions.prize
-            expect(prize).to eq(1_000_000)
-
             # проверяем что юзер победил и пришли деньги игроку
             expect(game_w_questions.status).to eq :won
             expect(game_w_questions.finished?).to be true
-            expect(user.balance).to eq prize
+            expect(user.balance).to eq(1_000_000)
           end
         end
 
