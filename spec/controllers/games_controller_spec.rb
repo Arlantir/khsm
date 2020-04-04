@@ -103,6 +103,26 @@ RSpec.describe GamesController, type: :controller do
       expect(flash.empty?).to be_truthy # удачный ответ не заполняет flash
     end
 
+    context 'when answer is wrong' do
+      let(:wrong_answer) do
+        correct_key = game_w_questions.current_game_question.correct_answer_key
+        question_answers = game_w_questions.game_questions.first
+        wrong_key = question_answers.variants.reject{|q| q.include?(correct_key)}
+        wrong_key.keys[0]
+      end
+
+      # юзер отвечает на игру некорректно - игра продолжается
+      it 'wrong answer' do
+        put :answer, id: game_w_questions.id, letter: wrong_answer
+        game = assigns(:game)
+
+        expect(game.finished?).to be true
+        expect(game.current_level).to eq(0)
+        expect(response).to redirect_to user_path
+        expect(flash[:alert]).to be
+      end
+    end
+
     # тест на отработку "помощи зала"
     it 'uses audience help' do
       # сперва проверяем что в подсказках текущего вопроса пусто
