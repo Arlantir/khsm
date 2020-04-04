@@ -159,10 +159,8 @@ RSpec.describe Game, type: :model do
 
       context 'when answer is wrong' do
         let(:wrong_answer) do
-          correct_key = game_w_questions.current_game_question.correct_answer_key
-          question_answers = game_w_questions.game_questions.first
-          wrong_key = question_answers.variants.reject{|q| q.include?(correct_key)}
-          wrong_key.keys[0]
+          wrong_key = %w[a b c d].reject{ |q| q.include?(game_w_questions.current_game_question.correct_answer_key) }
+          wrong_key[0]
         end
         before { game_w_questions.answer_current_question!(wrong_answer) }
 
