@@ -105,8 +105,7 @@ RSpec.describe GamesController, type: :controller do
 
     context 'when answer is wrong' do
       let(:wrong_answer) do
-        wrong_key = %w[a b c d].reject{ |q| q.include?(game_w_questions.current_game_question.correct_answer_key) }
-        wrong_key[0]
+        %w[a b c d].reject { |q| q ==game_w_questions.current_game_question.correct_answer_key }.sample
       end
 
       # юзер отвечает на игру некорректно - игра продолжается
