@@ -105,15 +105,13 @@ RSpec.describe GamesController, type: :controller do
 
     context 'when answer is wrong' do
       let(:wrong_answer) do
-        correct_key = game_w_questions.current_game_question.correct_answer_key
-        question_answers = game_w_questions.game_questions.first
-        wrong_key = question_answers.variants.reject{|q| q.include?(correct_key)}
-        wrong_key.keys[0]
+        wrong_key = %w[a b c d].reject{ |q| q.include?(game_w_questions.current_game_question.correct_answer_key) }
+        wrong_key[0]
       end
 
       # юзер отвечает на игру некорректно - игра продолжается
       it 'wrong answer' do
-        put :answer, id: game_w_questions.id, letter: wrong_answer
+        put :answer, id: game_w_questions.id, params: { letter: wrong_answer }
         game = assigns(:game)
 
         expect(game.finished?).to be true
