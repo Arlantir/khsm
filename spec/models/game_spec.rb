@@ -125,11 +125,10 @@ RSpec.describe Game, type: :model do
     # группа тестов на проверку ответов пользователя
     describe '#answer_current_question!' do
       context 'when answer is correct' do
+        let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
+        before { game_w_questions.answer_current_question!(correct_answer) }
 
         context 'and question is last' do
-          let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
-          before { game_w_questions.answer_current_question!(correct_answer) }
-
           it 'answer to the last question' do
             # повышаем уровень игры до последнего
             game_w_questions.update_attribute(:current_level, 14)
@@ -145,9 +144,6 @@ RSpec.describe Game, type: :model do
         end
 
         context 'and timeout' do
-          let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
-          before { game_w_questions.answer_current_question!(correct_answer) }
-
           it 'answer the question' do
             game_w_questions.created_at = 1.hour.ago
             game_w_questions.is_failed = true
@@ -160,9 +156,6 @@ RSpec.describe Game, type: :model do
         end
 
         context 'and normal case' do
-          let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
-          before { game_w_questions.answer_current_question!(correct_answer) }
-
           it 'answer correctly' do
             # проверяем, что ответ правильный
             expect(game_w_questions.answer_current_question!(correct_answer)).to be true
@@ -175,12 +168,12 @@ RSpec.describe Game, type: :model do
       end
 
       context 'when answer is wrong' do
-        let(:correct_answer) { !game_w_questions.current_game_question.correct_answer_key }
-        before { game_w_questions.answer_current_question!(correct_answer) }
+        let(:wrong_answer) { !game_w_questions.current_game_question.correct_answer_key }
+        before { game_w_questions.answer_current_question!(wrong_answer) }
 
         it 'answer incorrect' do
           # проверяем, что ответ неправильный
-          expect(game_w_questions.answer_current_question!(correct_answer)).to be false
+          expect(game_w_questions.answer_current_question!(wrong_answer)).to be false
 
           # игра не продолжается
           expect(game_w_questions.status).to_not eq(:in_progress)
