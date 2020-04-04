@@ -129,25 +129,23 @@ RSpec.describe Game, type: :model do
         before { game_w_questions.answer_current_question!(correct_answer) }
 
         context 'and question is last' do
-          it 'answer to the last question' do
-            # повышаем уровень игры до последнего
-            game_w_questions.update_attribute(:current_level, 14)
+          let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user, current_level: Question::QUESTION_LEVELS.max) }
 
+          it 'answer to the last question' do
             # проверяем, что ответ правильный
             expect(game_w_questions.answer_current_question!(correct_answer)).to be true
 
             # проверяем что юзер победил и пришли деньги игроку
             expect(game_w_questions.status).to eq :won
             expect(game_w_questions.finished?).to be true
-            expect(user.balance).to eq(1_000_000)
+            expect(user.balance).to eq(PRIZES.max)
           end
         end
 
         context 'and timeout' do
-          it 'answer the question' do
-            game_w_questions.created_at = 1.hour.ago
-            game_w_questions.is_failed = true
+          let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user, created_at: 1.hour.ago, is_failed: true) }
 
+          it 'answer the question' do
             # при ответе возвращаем false, так как игра закончена
             expect(game_w_questions.answer_current_question!(correct_answer)).to be false
             # статус почему закончилась игра
@@ -168,7 +166,12 @@ RSpec.describe Game, type: :model do
       end
 
       context 'when answer is wrong' do
-        let(:wrong_answer) { !game_w_questions.current_game_question.correct_answer_key }
+        let(:wrong_answer) do
+          correct_key = game_w_questions.current_game_question.correct_answer_key
+          question_answers = game_w_questions.game_questions.first
+          wrong_key = question_answers.variants.reject{|q| q.include?(correct_key)}
+          wrong_key.keys[0]
+        end
         before { game_w_questions.answer_current_question!(wrong_answer) }
 
         it 'answer incorrect' do
