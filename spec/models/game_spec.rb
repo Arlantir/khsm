@@ -145,6 +145,7 @@ RSpec.describe Game, type: :model do
           it 'answer the question' do
             # игра закончилась по тайм ауту
             expect(game_w_questions.status).to eq(:timeout)
+            expect(game_w_questions.finished?).to be true
           end
         end
 
@@ -159,14 +160,13 @@ RSpec.describe Game, type: :model do
 
       context 'when answer is wrong' do
         let(:wrong_answer) do
-          wrong_key = %w[a b c d].reject{ |q| q.include?(game_w_questions.current_game_question.correct_answer_key) }
-          wrong_key[0]
+          %w[a b c d].reject { |q| q == game_w_questions.current_game_question.correct_answer_key }.sample
         end
         before { game_w_questions.answer_current_question!(wrong_answer) }
 
         it 'answer incorrect' do
           # игра не продолжается при неправильном ответе
-          expect(game_w_questions.status).to_not eq(:in_progress)
+          expect(game_w_questions.status).to eq(:fail)
           expect(game_w_questions.finished?).to be true
         end
       end
