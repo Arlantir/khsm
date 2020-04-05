@@ -103,8 +103,8 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.help_hash).to include(:friend_call)
       fc = game_question.help_hash[:friend_call]
 
-      # проверим вызов подсказки
-      expect(fc).to eq(fc)
+      # проверим типа возвращаемого значения
+      expect(fc).to be_instance_of(String)
     end
   end
 end
