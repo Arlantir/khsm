@@ -108,13 +108,14 @@ RSpec.describe GamesController, type: :controller do
         %w[a b c d].reject { |q| q == game_w_questions.current_game_question.correct_answer_key }.sample
       end
 
-      # юзер отвечает на игру некорректно - игра продолжается
+      # юзер отвечает на игру некорректно - игра заканчивается
       it 'wrong answer' do
         put :answer, id: game_w_questions.id, params: { letter: wrong_answer }
         game = assigns(:game)
 
         expect(game.finished?).to be true
         expect(game.current_level).to eq(0)
+        expect(response.status).to eq(302)
         expect(response).to redirect_to user_path
         expect(flash[:alert]).to be
       end
