@@ -2,9 +2,8 @@
 require 'rails_helper'
 
 # Начинаем описывать функционал, связанный с созданием игры
-RSpec.feature 'USER creates a game', type: :feature do
-  # Чтобы пользователь мог начать игру, нам надо
-  # создать пользователя
+RSpec.feature 'USER show a profile', type: :feature do
+  # Создаим пару юзеров
   let(:user) { FactoryGirl.create :user }
   let(:other_user) { FactoryGirl.create :user, balance: 33000 }
 
@@ -28,7 +27,7 @@ RSpec.feature 'USER creates a game', type: :feature do
     login_as user
   end
 
-  # Сценарий успешного создания игры
+  # Сценарий просмотра профиля юзера
   scenario 'successfully' do
     # Заходим на главную
     visit user_path(other_user)
@@ -36,12 +35,10 @@ RSpec.feature 'USER creates a game', type: :feature do
     # Ожидаем, что попадем на нужный url
     expect(page).to have_current_path '/users/1'
 
-    # Ожидаем, что на экране правильно выведены данные
-
     # Отсутствует кнопка смены имени и пароля, если я не юзер
     expect(page).to_not have_content 'Сменить имя и пароль'
 
-    # корректно выводит данные в таблицу
+    # Ожидаем, что на экране правильно выведены данные
     expect(page).to have_content '1 000 ₽'
     expect(page).to have_content '50/50'
     expect(page).to have_content 'деньги'
