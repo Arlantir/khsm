@@ -91,5 +91,24 @@ RSpec.describe GameQuestion, type: :model do
       expect(ff).to include('b') # должен остаться правильный вариант
       expect(ff.size).to eq 2 # всего должно остаться 2 варианта
     end
+
+    # проверяем работу звонок другу
+    it 'correct friend_call' do
+      # сначала убедимся, в подсказках пока нет нужного ключа
+      expect(game_question.help_hash).not_to include(:friend_call)
+      # вызовем подсказку
+      game_question.add_friend_call
+      # добавим в переменнуюключ верного ответа
+      q = (game_question.correct_answer_key).upcase
+
+      # проверим создание подсказки
+      expect(game_question.help_hash).to include(:friend_call)
+      fc = game_question.help_hash[:friend_call]
+
+      # проверим что возвращается в значении
+      expect(fc[-1]).to match(/[A-D]/)
+      expect(fc[-1]).to eq(q)
+      expect(fc).to include("считает, что это вариант #{q}")
+    end
   end
 end
