@@ -98,13 +98,17 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.help_hash).not_to include(:friend_call)
       # вызовем подсказку
       game_question.add_friend_call
+      # добавим в переменнуюключ верного ответа
+      q = (game_question.correct_answer_key).upcase
 
       # проверим создание подсказки
       expect(game_question.help_hash).to include(:friend_call)
       fc = game_question.help_hash[:friend_call]
 
-      # проверим типа возвращаемого значения
-      expect(fc).to be_instance_of(String)
+      # проверим что возвращается в значении
+      expect(fc[-1]).to match(/[A-D]/)
+      expect(fc[-1]).to eq(q)
+      expect(fc).to include("считает, что это вариант #{q}")
     end
   end
 end
