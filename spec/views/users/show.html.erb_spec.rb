@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe "users/show", type: :view do
   before(:each) do
     assign(:user, (
-      FactoryGirl.build_stubbed(:user, name: 'Вася')
+      FactoryBot.build_stubbed(:user, name: 'Вася')
     ))
 
     render
@@ -20,7 +20,7 @@ RSpec.describe "users/show", type: :view do
   # describe '1' do
   #   before(:each) do
   #     assign(:user, (
-  #     FactoryGirl.build_stubbed(:user, name: 'Вася')
+  #     FactoryBot.build_stubbed(:user, name: 'Вася')
   #     ))
   #   end
   #
