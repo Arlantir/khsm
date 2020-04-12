@@ -29,8 +29,6 @@ RSpec.describe "users/show", type: :view do
     expect(rendered).to match '1'
     expect(rendered).to match '10'
     expect(rendered).to match '1 000 ₽'
-
-
   end
 
   private
