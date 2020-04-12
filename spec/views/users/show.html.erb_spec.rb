@@ -4,10 +4,9 @@ require 'rails_helper'
 
 RSpec.describe "users/show", type: :view do
   before(:each) do
-    assign(:user, (
-      FactoryBot.build_stubbed(:user, name: 'Вася')
-    ))
-
+    user = FactoryBot.create(:user, name: 'Вася')
+    assign(:user, user)
+    sign_in user
     render
   end
 
@@ -17,33 +16,27 @@ RSpec.describe "users/show", type: :view do
   end
 
   # текущий пользователь (и только он) видит там кнопку для смены пароля
-  # describe '1' do
-  #   before(:each) do
-  #     assign(:user, (
-  #     FactoryBot.build_stubbed(:user, name: 'Вася')
-  #     ))
-  #   end
-  #
-  #   it 'should ' do
-  #
-  #
-  #     expect(rendered).not_to match 'Петя'
-  #     expect(rendered).to match 'Вася'
-  #   end
-  # end
+  it 'current user' do
+    expect(rendered).to match 'Сменить имя и пароль'
+  end
 
-  #
-  #
-  # # странице отрисовываются фрагменты с игрой
-  # it 'should ' do
-  #
-  #   expect(rendered).to match 'Вася'
-  #   expect(rendered).to have_content 'User game goes here'
-  # end
-  #
-  # private
-  #
-  # def render_partial
-  #   render stub_template 'users/_game.html.erb' => 'User game goes here'
-  # end
+  # на странице отрисовываются фрагменты с игрой
+  it 'fragments with the game' do
+    games = FactoryBot.build_stubbed(:game, id: 1, current_level: 10, prize: 1000)
+
+    render_partial(games)
+
+    expect(rendered).to match '1'
+    expect(rendered).to match '10'
+    expect(rendered).to match '1 000 ₽'
+
+
+  end
+
+  private
+
+  # Метод, который рендерит фрагмент с соотв. объектами
+  def render_partial(games)
+    render partial: 'users/game', object: games
+  end
 end
