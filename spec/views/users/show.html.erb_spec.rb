@@ -23,13 +23,12 @@ RSpec.describe "users/show", type: :view do
 
     # на странице отрисовываются фрагменты с игрой
     it 'fragments with the game' do
-      games = FactoryBot.build_stubbed(:game, id: 1, current_level: 10, prize: 1000)
+      games = FactoryBot.build_stubbed(:game, current_level: 13, prize: 400, audience_help_used: false)
+      render partial: 'users/game', object: games
 
-      render_partial(games)
-
-      expect(rendered).to match '1'
-      expect(rendered).to match '10'
-      expect(rendered).to match '1 000 ₽'
+      expect(rendered).to match '13'
+      expect(rendered).to match '400 ₽'
+      expect(rendered).to match '50/50'
     end
   end
 
@@ -44,12 +43,5 @@ RSpec.describe "users/show", type: :view do
     it 'current user' do
       expect(rendered).to_not match 'Сменить имя и пароль'
     end
-  end
-
-  private
-
-  # Метод, который рендерит фрагмент с соотв. объектами
-  def render_partial(games)
-    render partial: 'users/game', object: games
   end
 end
