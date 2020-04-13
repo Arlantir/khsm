@@ -6,7 +6,9 @@ RSpec.describe "users/show", type: :view do
   context "when user watch user's page" do
     before(:each) do
       user = FactoryBot.create(:user, name: 'Вася')
+      @games = FactoryBot.build_stubbed(:game, current_level: 13, prize: 400, audience_help_used: false)
       assign(:user, user)
+      assign(:games, @games)
       sign_in user
       render
     end
@@ -23,8 +25,7 @@ RSpec.describe "users/show", type: :view do
 
     # на странице отрисовываются фрагменты с игрой
     it 'fragments with the game' do
-      games = FactoryBot.build_stubbed(:game, current_level: 13, prize: 400, audience_help_used: false)
-      render partial: 'users/game', object: games
+      render partial: 'users/game', object: @games
 
       expect(rendered).to match '13'
       expect(rendered).to match '400 ₽'
@@ -34,7 +35,7 @@ RSpec.describe "users/show", type: :view do
 
   context "when anonumous watch user's page" do
     before(:each) do
-      assign(:user, (FactoryBot.build_stubbed(:user)))
+      assign(:user, FactoryBot.build_stubbed(:user))
 
       render
     end
